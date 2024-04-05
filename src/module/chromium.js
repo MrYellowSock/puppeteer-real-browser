@@ -61,7 +61,8 @@ export const startSession = ({ args = [], headless = 'auto', customConfig = {}, 
                 try {
                     var xvfbsession = new Xvfb({
                         silent: true,
-                        xvfb_args: ['-screen', '0', '1920x1080x24', '-ac']
+                        xvfb_args: ['-screen', '0', '1920x1080x24', '-ac'],
+						displayNum: 1,
                     });
                     xvfbsession.startSync();
                 } catch (err) {
@@ -71,6 +72,9 @@ export const startSession = ({ args = [], headless = 'auto', customConfig = {}, 
                     })
                 }
             }
+
+			chromeFlags.push('--window-size=1920,1080')
+			chromeFlags.push('--start-maximized')
 
             var chrome = await launch({
                 chromePath,

@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     apt-transport-https \
     xvfb \
+	x11vnc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome
@@ -33,4 +34,4 @@ COPY . .
 EXPOSE 3000
 
 # Command to run the application
-CMD ["npm", "start"]
+CMD ["bash", "start.sh"]

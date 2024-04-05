@@ -3,8 +3,6 @@ import puppeteer from 'puppeteer-extra';
 import { notice, slugify } from './module/general.js'
 import { autoSolve, setSolveStatus } from './module/turnstile.js'
 import { fp } from './module/afp.js';
-import { puppeteerRealBrowser } from './module/old.js'
-export { puppeteerRealBrowser };
 
 var global_target_status = true
 
@@ -47,7 +45,8 @@ export const connect = ({ args = [], headless = 'auto', customConfig = {}, proxy
         const browser = await puppeteer.connect({
             targetFilter: (target) => targetFilter({ target: target, skipTarget: skipTarget }),
             browserWSEndpoint: chromeSession.browserWSEndpoint,
-            ...connectOption
+            ...connectOption,
+			defaultViewport: null,
         });
 
         var page = await browser.pages()
@@ -68,12 +67,7 @@ export const connect = ({ args = [], headless = 'auto', customConfig = {}, proxy
 
         await page.setUserAgent(chromeSession.agent);
 
-        await page.setViewport({
-            width: 1920,
-            height: 1080
-        });
-
-        browser.on('disconnected', async () => {
+		browser.on('disconnected', async () => {
             notice({
                 message: 'Browser Disconnected',
                 type: 'info'
@@ -95,16 +89,6 @@ export const connect = ({ args = [], headless = 'auto', customConfig = {}, proxy
             } catch (err) {
                 // console.log(err.message);
             }
-
-            try {
-                await newPage.setViewport({
-                    width: 1920,
-                    height: 1080
-                });
-            } catch (err) {
-                // console.log(err.message);
-            }
-
 
             if (newPage && fingerprint === true) {
                 try {
