@@ -53,9 +53,12 @@ export const startSession = ({ args = [], headless = 'auto', customConfig = {}, 
                 slugify(process.platform).includes('win') ? chromeFlags.push('--headless=new') : ''
             }
 
-            if (proxy && proxy.host && proxy.host.length > 0) {
-                chromeFlags.push(`--proxy-server=${proxy.host}:${proxy.port}`);
-            }
+			if (proxy?.url?.length > 0) {
+				chromeFlags.push(`--proxy-server=${proxy.url}`);
+			}
+			else if (proxy?.host?.length > 0) {
+				chromeFlags.push(`--proxy-server=${proxy.protocol ? `${proxy.protocol}://` : ""}${proxy.host}:${proxy.port}`);
+			}
 
             if (process.platform === 'linux') {
                 try {

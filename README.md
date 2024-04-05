@@ -84,10 +84,17 @@ connect({
     tf: true,
 
     // proxy:{
+    //     protocol:'<proxy-protocol>',
     //     host:'<proxy-host>',
     //     port:'<proxy-port>',
-    //     username:'<proxy-username>',
-    //     password:'<proxy-password>'
+    //     username?:'<proxy-username>',
+    //     password?:'<proxy-password>'
+    // }
+    // OR
+    // proxy:{
+    //     url:'<proxy-url>',
+    //     username?:'<proxy-username>',
+    //     password?:'<proxy-password>'
     // }
 
 })
