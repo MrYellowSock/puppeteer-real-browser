@@ -25,7 +25,7 @@ export const closeSession = async ({ xvfbsession, cdpSession, chrome }) => {
 }
 
 
-export const startSession = ({ args = [], headless = 'auto', customConfig = {}, proxy = {} }) => {
+export const startSession = ({ args = [], headless = 'auto', customConfig = {}, proxy = {}, resolution={width: 1366, height: 768} }) => {
     return new Promise(async (resolve, reject) => {
         try {
             var xvfbsession = null
@@ -64,7 +64,7 @@ export const startSession = ({ args = [], headless = 'auto', customConfig = {}, 
                 try {
                     var xvfbsession = new Xvfb({
                         silent: true,
-                        xvfb_args: ['-screen', '0', '1920x1080x24', '-ac'],
+                        xvfb_args: ['-screen', '0', `${resolution.width}x${resolution.height}x24`, '-ac'],
 						displayNum: 1,
                     });
                     xvfbsession.startSync();
@@ -76,7 +76,7 @@ export const startSession = ({ args = [], headless = 'auto', customConfig = {}, 
                 }
             }
 
-			chromeFlags.push('--window-size=1920,1080')
+			chromeFlags.push(`--window-size=${resolution.width},${resolution.height}`)
 			chromeFlags.push('--start-maximized')
 
             var chrome = await launch({
