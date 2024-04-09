@@ -8,108 +8,109 @@ var global_target_status = true
 
 function targetFilter({ target, skipTarget }) {
 
-    if (global_target_status === false) {
-        return true
-    }
-    var response = !!target.url()
-    if (skipTarget.find(item => String(target.url()).indexOf(String(item) > -1))) {
-        response = true
-    }
-    return response;
+	if (global_target_status === false) {
+		return true
+	}
+	var response = !!target.url()
+	if (skipTarget.find(item => String(target.url()).indexOf(String(item) > -1))) {
+		response = true
+	}
+	return response;
 }
 
 
 async function handleNewPage(page) {
-    fp(page);
-    return page
+	fp(page);
+	return page
 }
 
 
 const setTarget = ({ status = true }) => {
-    global_target_status = status
+	global_target_status = status
 }
 
 
-export const connect = ({ args = [], headless = 'auto', customConfig = {}, proxy = {}, skipTarget = [], fingerprint = true, turnstile = false, connectOption = {}, tf = true }) => {
-    return new Promise(async (resolve, reject) => {
+export const connect = ({ args = [], headless = 'auto', customConfig = {}, proxy = {}, resolution = { width: 1366, height: 768 }, skipTarget = [], fingerprint = true, turnstile = false, connectOption = {}, tf = true }) => {
+	return new Promise(async (resolve, reject) => {
 
-        global_target_status = tf
+		global_target_status = tf
 
-        const { chromeSession, cdpSession, chrome, xvfbsession } = await startSession({
-            args: args,
-            headless: headless,
-            customConfig: customConfig,
-            proxy: proxy
-        })
+		const { chromeSession, cdpSession, chrome, xvfbsession } = await startSession({
+			args: args,
+			headless: headless,
+			customConfig: customConfig,
+			proxy: proxy,
+			resolution: resolution
+		})
 
-        const browser = await puppeteer.connect({
-            targetFilter: (target) => targetFilter({ target: target, skipTarget: skipTarget }),
-            browserWSEndpoint: chromeSession.browserWSEndpoint,
-            ...connectOption,
+		const browser = await puppeteer.connect({
+			targetFilter: (target) => targetFilter({ target: target, skipTarget: skipTarget }),
+			browserWSEndpoint: chromeSession.browserWSEndpoint,
+			...connectOption,
 			defaultViewport: null,
-        });
+		});
 
-        var page = await browser.pages()
+		var page = await browser.pages()
 
-        page = page[0]
+		page = page[0]
 
-        if (proxy && proxy.username && proxy.username.length > 0) {
-            await page.authenticate({ username: proxy.username, password: proxy.password });
-        }
+		if (proxy && proxy.username && proxy.username.length > 0) {
+			await page.authenticate({ username: proxy.username, password: proxy.password });
+		}
 
-        if (fingerprint === true) {
-            handleNewPage(page);
-        }
-        if (turnstile === true) {
-            setSolveStatus({ status: true })
-            autoSolve({ page: page, browser: browser })
-        }
+		if (fingerprint === true) {
+			handleNewPage(page);
+		}
+		if (turnstile === true) {
+			setSolveStatus({ status: true })
+			autoSolve({ page: page, browser: browser })
+		}
 
-        await page.setUserAgent(chromeSession.agent);
+		await page.setUserAgent(chromeSession.agent);
 
 		browser.on('disconnected', async () => {
-            notice({
-                message: 'Browser Disconnected',
-                type: 'info'
-            })
-            setSolveStatus({ status: false })
-            await closeSession({
-                xvfbsession: xvfbsession,
-                cdpSession: cdpSession,
-                chrome: chrome
-            })
-        });
+			notice({
+				message: 'Browser Disconnected',
+				type: 'info'
+			})
+			setSolveStatus({ status: false })
+			await closeSession({
+				xvfbsession: xvfbsession,
+				cdpSession: cdpSession,
+				chrome: chrome
+			})
+		});
 
 
-        browser.on('targetcreated', async target => {
-            var newPage = await target.page();
+		browser.on('targetcreated', async target => {
+			var newPage = await target.page();
 
-            try {
-                await newPage.setUserAgent(chromeSession.agent);
-            } catch (err) {
-                // console.log(err.message);
-            }
+			try {
+				await newPage.setUserAgent(chromeSession.agent);
+			} catch (err) {
+				// console.log(err.message);
+			}
 
-            if (newPage && fingerprint === true) {
-                try {
-                    handleNewPage(newPage);
-                } catch (err) { }
-            }
+			if (newPage && fingerprint === true) {
+				try {
+					handleNewPage(newPage);
+				} catch (err) { }
+			}
 
-            if (turnstile === true) {
-                autoSolve({ page: newPage })
-            }
-        });
+			if (turnstile === true) {
+				autoSolve({ page: newPage })
+			}
+		});
 
-        resolve({
-            browser: browser,
-            page: page,
-            xvfbsession: xvfbsession,
-            cdpSession: cdpSession,
-            chrome: chrome,
-            setTarget: setTarget
-        })
-    })
+		resolve({
+			browser: browser,
+			page: page,
+			xvfbsession: xvfbsession,
+			cdpSession: cdpSession,
+			chrome: chrome,
+			setTarget: setTarget
+		})
+	})
 }
 
 
