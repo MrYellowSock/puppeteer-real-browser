@@ -11,6 +11,7 @@ const { page, browser } = await connect({
 	turnstile: true,
 	connectOption: {},
 	tf: true,
+	runXvfb: !process.env.DISPLAY
 })
 // var cl = setInterval(() => {
 //     page.screenshot({ path: 'example.png' });

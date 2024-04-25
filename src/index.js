@@ -30,7 +30,7 @@ const setTarget = ({ status = true }) => {
 }
 
 
-export const connect = ({ args = [], headless = 'auto', customConfig = {}, proxy = {}, resolution = { width: 1366, height: 768 }, skipTarget = [], fingerprint = true, turnstile = false, connectOption = {}, tf = true }) => {
+export const connect = ({ args = [], headless = 'auto', customConfig = {}, proxy = {}, resolution, runXvfb, skipTarget = [], fingerprint = true, turnstile = false, connectOption = {}, tf = true }) => {
 	return new Promise(async (resolve, reject) => {
 
 		global_target_status = tf
@@ -40,7 +40,8 @@ export const connect = ({ args = [], headless = 'auto', customConfig = {}, proxy
 			headless: headless,
 			customConfig: customConfig,
 			proxy: proxy,
-			resolution: resolution
+			resolution: resolution,
+			runXvfb: runXvfb
 		})
 
 		const browser = await puppeteer.connect({

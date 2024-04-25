@@ -25,7 +25,7 @@ export const closeSession = async ({ xvfbsession, cdpSession, chrome }) => {
 }
 
 
-export const startSession = ({ args = [], headless = 'auto', customConfig = {}, proxy = {}, resolution = { width: 1366, height: 768 } }) => {
+export const startSession = ({ args = [], headless = 'auto', customConfig = {}, proxy = {}, resolution = { width: 1366, height: 768 }, runXvfb = true }) => {
 	return new Promise(async (resolve, reject) => {
 		try {
 			var xvfbsession = null
@@ -61,16 +61,25 @@ export const startSession = ({ args = [], headless = 'auto', customConfig = {}, 
 			}
 
 			if (process.platform === 'linux') {
-				try {
-					var xvfbsession = new Xvfb({
-						silent: true,
-						xvfb_args: ['-screen', '0', `${resolution.width}x${resolution.height}x24`, '-ac'],
-						displayNum: 1,
-					});
-					xvfbsession.startSync();
-				} catch (err) {
+				// set your own display variable if Xvfb was disabled from creating.
+				if (runXvfb) {
+					try {
+						var xvfbsession = new Xvfb({
+							silent: true,
+							xvfb_args: ['-screen', '0', `${resolution.width}x${resolution.height}x24`, '-ac'],
+							displayNum: 1,
+						});
+						xvfbsession.startSync();
+					} catch (err) {
+						notice({
+							message: 'You are running on a Linux platform but do not have xvfb installed. The browser can be captured. Please install it with the following command\n\nsudo apt-get install xvfb\n\n' + err.message,
+							type: 'error'
+						})
+					}
+				}
+				else if (!process.env.DISPLAY) {
 					notice({
-						message: 'You are running on a Linux platform but do not have xvfb installed. The browser can be captured. Please install it with the following command\n\nsudo apt-get install xvfb\n\n' + err.message,
+						message: 'You are running on a Linux platform But neither xvfb or $DISPLAY is available' + err.message,
 						type: 'error'
 					})
 				}

@@ -7,8 +7,10 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     ca-certificates \
     apt-transport-https \
+    tigervnc-standalone-server \
+    tigervnc-common \
     xvfb \
-	x11vnc \
+    x11vnc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Google Chrome
