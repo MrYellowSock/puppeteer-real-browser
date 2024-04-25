@@ -1,4 +1,4 @@
-import { connect } from 'puppeteer-real-browser'
+import { connect } from './index.js'
 
 
 console.log('Start of test.js');
