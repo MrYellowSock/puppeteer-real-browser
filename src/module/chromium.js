@@ -79,7 +79,7 @@ export const startSession = ({ args = [], headless = 'auto', customConfig = {}, 
 				}
 				else if (!process.env.DISPLAY) {
 					notice({
-						message: 'You are running on a Linux platform But neither xvfb or $DISPLAY is available' + err.message,
+						message: 'You are running on a Linux platform But neither xvfb or $DISPLAY is available',
 						type: 'error'
 					})
 				}
